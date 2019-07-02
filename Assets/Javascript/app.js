@@ -86,7 +86,7 @@ $('#addSport').on("click", function () {
 $(document).on("click", ".sport-button", sportInfo);
 
 //Create on click to start and stop gif
-$(".gif").on("click", function () {
+$(document).on("click", ".gif", function () {
 
     var state = $(this).attr("data-state");
 
