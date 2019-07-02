@@ -31,28 +31,36 @@ function sportInfo() {
 
     // Creating an AJAX call for the specific movie button being clicked
     $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function(response) {
+        url: queryURL,
+        method: "GET"
+    }).then(function (response) {
         $("#gifHolder").empty();
         var sportResults = response.data;
         //For loop to retrieve 10 responses
-        for(i=0; i<10;i++) {
-        //Create a div to hold the data retrieved from the API
-        var sportDiv = $("<div class='sport'>");
+        for (i = 0; i < 10; i++) {
+            //Create a div to hold the data retrieved from the API
+            var sportDiv = $("<div class='sport'>");
 
-        //Create a variable to hold each data wanted
-        var rating = sportResults[i].rating;
-        var ratingHolder = $("<h6>").text("Rating: " + rating);
+            //Create a variable to hold each data wanted
+            var rating = sportResults[i].rating;
+            var ratingHolder = $("<h6>").text("Rating: " + rating);
 
-        var gif = sportResults[i].images.fixed_height_still.url;
-        var gifHolder = $("<img>").attr("src", gif);
-            console.log(rating, gif)
-        sportDiv.append(ratingHolder);
-        sportDiv.append(gifHolder);
-        console.log(sportDiv);
+            //Variables for still images and gifs
+            var gifStill = sportResults[i].images.fixed_height_small_still.url;
+            var gifAnimate = sportResults[i].images.fixed_height_small.url;
+            
+            //Variable to hold gif
+            var gifHolder = $("<img>").attr("src", gifStill);
+            gifHolder.attr("data-still", gifStill);
+            gifHolder.attr("data-animate", gifAnimate);
+            //Add attribute that determines which link to use in function
+            gifHolder.attr("data-state", "still");
+            gifHolder.addClass("gif");
 
-        $("#gifHolder").append(sportDiv);
+            sportDiv.append(ratingHolder);
+            sportDiv.append(gifHolder);
+
+            $("#gifHolder").append(sportDiv);
         };
     });
 };
@@ -74,7 +82,24 @@ $('#addSport').on("click", function () {
     createButton();
 });
 
+//Retrieve data from Giphy
 $(document).on("click", ".sport-button", sportInfo);
+
+//Create on click to start and stop gif
+$(".gif").on("click", function () {
+
+    var state = $(this).attr("data-state");
+
+    if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+    }
+    else if (state === "animate") {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+    }
+
+});
 
 //Call function on page load
 createButton();
